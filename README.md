@@ -1,23 +1,26 @@
 # UpdateFromThread demo
 
-This demo shows how to do work on a thread and update the state of the app Swing GUI from that thread.
+This demo shows how to do work in an application **thread** and update the state of the app Swing GUI from that thread.
 
 Classes:
 
-* `DotModel` contains a coordinate point which is moved within a rectangle, bouncing from the "walls". Code is executed in a thread, changing the point every 40 ms.
-* `DotModelObserver` is notified by the `DotModel` as the point coordinates change.
-* `GraphicsPanel` draws the dot on on the coordinate point, and displays the coordinate in a `JLabel`.
-* `GUIApp` implements the `main` and building the Swing GUI with `JFrame`, `GraphicsPanel` and the `DotModel`.
+* `DotModel` contains dots that moved within a rectangle (the view), bouncing from the "walls". Code is executed in a **thread**, changing the point locations several times a second. After updating the dots, the *observer* is notified to update the view.
+* `Dot`s are the dots in the model, having a coordinate point, movement direction and a colour.
+* `DotModelObserver` is notified by the `DotModel` as the dots have changed position.
+* `GraphicsPanel` is the **observer**, drawing the dots on the view when notified by the `DotModel`, additionally displaying the number of dots in a `JLabel`.
+* `GUIApp` implements the `main` and building the app Swing GUI with `JFrame`, `GraphicsPanel` and the `DotModel`.
 
 ![Demo app screenshot](DemoappScreenshot.png)
 
-Take a loot at the code in `DotModel.run()` to see what the thread does, and how it notifies the observer (`GraphicsPanel`) about the coordinate point change.
+You can create new dots by clicking on the view with your mouse. If you want to clear all the points away, do alt-click. You may also resize the window to give more (or less) room for the dots to bounce.
 
-Then see how the `GraphicsPanel.dotMovedTo(int, int)` updates the coordinate point and tells Swing to update the view by calling `repaint()`. Basically, Swing components should not be directly manipulated here, e.g. calling drawing methods or updating label contents (things done in `paint()`).
+Take a loot at the code in `DotModel.run()` to see what the thread does, and how it notifies the observer (`GraphicsPanel`) when dot locations have been updated.
 
-Note what is printed out in the console when the demo is running. It shows the name of the thread in the context of which the `GraphicsPanel.dotMovedTo(int, int)` is called. 
+Then see how the `GraphicsPanel.dotsMoved()` updates the label telling the number of dots currently visible, and tells Swing to update the view by calling `repaint()`. Basically, Swing components should not be directly manipulated here, e.g. calling drawing methods or updating label contents (things done in `paint(Graphics g)` where the dots are drawn), since this method is called by our `DotModel` thread.
 
-Then comment out the two lines as instructed in the comments of `GraphicsPanel.dotMovedTo(int, int)`. Run the app again and now you see that the code is executed in the context of the `DotModel` worker thread, not the Swing thread as it is supposed to.
+Note what is printed out in the console when the demo is running. It shows the name of the thread in the context of which the `GraphicsPanel.dotsMoved()` is called. This printout may be commented out, so remove the comments in that case to see the logs printed out.
+
+Then comment the two lines (labeled `#1` and `#2`) as instructed in the comments of `GraphicsPanel.dotsMoved()`. Run the app again and now you see (from the printouts) that the code is executed in the context of the `DotModel` worker thread, *not* the Swing thread as it is supposed to. In some environments, this actually causes an exception, but in some environments, not. Why this happens, I do not know. If you have an idea, please tell.
 
 ## Why this was done
 
