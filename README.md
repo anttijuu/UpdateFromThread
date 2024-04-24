@@ -22,6 +22,21 @@ Note what is printed out in the console when the demo is running. It shows the n
 
 Then comment the two lines (labeled `#1` and `#2`) as instructed in the comments of `GraphicsPanel.dotsMoved()`. Run the app again and now you see (from the printouts) that the code is executed in the context of the `DotModel` worker thread, *not* the Swing thread as it is supposed to. In some environments, this actually causes an exception, but in some environments, not. Why this happens, I do not know. If you have an idea, please tell.
 
+You may also try out doing things even more worse ways; drawing the graphics directly in `dotsMoved()` to see what happens then...:
+
+```Java
+    public void dotsMoved() {
+        int dotCount = model.getDotCount();
+        dotsCountLabel.setText(String.format("%d dot%s", dotCount, dotCount != 1 ? "s" : ""));
+        List<Dot> dots = model.getDots();
+        Graphics g = getGraphics();
+        for (Dot dot : dots) {
+            g.setColor(dot.color);
+            g.fillOval((int) dot.point.getX(), (int) dot.point.getY(), DotModel.DOT_SIZE, DotModel.DOT_SIZE);
+        }
+    }
+```
+
 ## Why this was done
 
 This demo was done by Antti Juustila, INTERACT Research Unit, University of Oulu, Finland.

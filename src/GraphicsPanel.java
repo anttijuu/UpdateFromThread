@@ -27,8 +27,8 @@ public class GraphicsPanel extends JPanel implements DotModelObserver, Component
     public void paint(Graphics g) {
         super.paint(g);
         g.drawRect(0, 0, getWidth(), getHeight());
-        List<Dot> dots = model.getDots();
-        for (Dot dot : dots) {
+        final List<Dot> dots = model.getDots();
+        for (final Dot dot : dots) {
             g.setColor(dot.color);
             g.fillOval((int) dot.point.getX(), (int)dot.point.getY(), DotModel.DOT_SIZE, DotModel.DOT_SIZE);
         }
@@ -46,7 +46,7 @@ public class GraphicsPanel extends JPanel implements DotModelObserver, Component
             // System.out.format("Thread: %s%n", Thread.currentThread().getName());
             int dotCount = model.getDotCount();
             dotsCountLabel.setText(String.format("%d dot%s", dotCount, dotCount != 1 ? "s" : ""));
-            repaint();
+           repaint();
         }); // #2
     }
 
